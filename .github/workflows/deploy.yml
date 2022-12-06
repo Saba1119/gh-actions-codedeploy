@@ -6,6 +6,8 @@ on:
 
 env:
   applicationfolder: goapp
+  AWS_REGION: us-east-1
+  S3BUCKET: code-deploy-bucket-saba
 
 jobs:
   build:
@@ -15,6 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout Repository
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}  
+
+      - name: Upload Artifact to s3
+        working-directory: ${{ env.applicationfolder }}/
+        run: aws s3 cp * s3://${{ env.S3BUCKET  }}/    
 
       - name: Setup Go
         uses: actions/setup-go@v2
