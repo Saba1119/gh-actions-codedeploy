@@ -28,7 +28,7 @@ jobs:
 
       - name: Upload Artifact to s3
         working-directory: ${{ env.applicationfolder }}
-        run: ls ${{ env.applicationfolder }}   
+        run: ls   
 
       - name: Setup Go
         uses: actions/setup-go@v2
