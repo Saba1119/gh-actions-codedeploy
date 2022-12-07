@@ -38,17 +38,32 @@ jobs:
         working-directory: ${{ env.applicationfolder }}   
         run: go build
 
-     
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Upload Artifact to s3
+        working-directory: ${{ env.applicationfolder }}
+        run: aws s3 cp goapp  s3://${{ env.S3BUCKET }}/goapp.zip 
+
+  deploy:
+      needs: build
+      runs-on: ubuntu-latest
+       
+
+      environment: test
+      permissions:
+        id-token: write
+        contents: read
+      steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
+          # role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          # role-session-name: GitHub-Action-Role
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  
-          aws-region: ${{ env.AWS_REGION }}    
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Install AWS CLI v2
-        run:  |
+      -  name: Install AWS CLI v2
+         run:  |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
           unzip -q /tmp/awscliv2.zip -d /tmp
           rm /tmp/awscliv2.zip
@@ -63,4 +78,5 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://${{ env.S3BUCKET }}/${{ env.s3-filename }}.zip \
           --source .
+        
   
