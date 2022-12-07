@@ -79,4 +79,12 @@ jobs:
           --s3-location s3://${{ env.S3BUCKET }}/${{ env.s3-filename }}.zip \
           --source .
         
-  
+      - name: Create CodeDeploy Deployment
+        id: deploy
+        run: |
+          # Assuming the Deployment Group is already setup
+          aws deploy create-deployment \
+            --application-name goapp \
+            --deployment-group-name goapp \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
