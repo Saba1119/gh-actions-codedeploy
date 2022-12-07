@@ -8,7 +8,9 @@ env:
   applicationfolder: goapp
   AWS_REGION: us-east-1
   S3BUCKET: code-deploy-bucket-saba
-
+  appname: goapp
+  deploy-group: goapp 
+  s3-filename: goapp
 jobs:
   build:
     name: Build and Package
@@ -43,12 +45,7 @@ jobs:
   deploy:
       needs: build
       runs-on: ubuntu-latest
-      strategy:
-      matrix:
-        appname: ['goapp']
-        deploy-group: ['goapp']
-        s3-bucket: ['code-deploy-bucket-saba']
-        s3-filename: ['goapp-${{ github.sha }}']
+       
 
       environment: test
       permissions:
@@ -75,10 +72,10 @@ jobs:
       - name: AWS Deploy push
         run: |
           aws deploy push \
-          --application-name ${{ matrix.appname }} \
-          --description "This is a revision for the ${{ matrix.appname }}-${{ github.sha }}" \
+          --application-name ${{ env.appname }} \
+          --description "This is a revision for the ${{ env.appname }}-${{ github.sha }}" \
           --ignore-hidden-files \
-          --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
+          --s3-location s3://${{ env.S3BUCKET }}/${{ env.s3-filename }}.zip \
           --source .
         
   #   - run: |
