@@ -40,25 +40,49 @@ jobs:
         working-directory: ${{ env.applicationfolder }}
         run: aws s3 cp goapp  s3://${{ env.S3BUCKET }}/goapp.zip 
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: test
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-    - uses: actions/checkout@v2
-    - uses: aws-actions/configure-aws-credentials@v1
-      with:
-        # role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
-        # role-session-name: GitHub-Action-Role
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  
-        aws-region: ${{ env.AWS_REGION }}
-    - run: |
-        commit_hash=`git rev-parse HEAD`
-        aws deploy create-deployment --application-name goapp --deployment-group-name goapp --github-location repository=$GITHUB_REPOSITORY,commitId=$commit_hash --ignore-application-stop-failures
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      strategy:
+      matrix:
+        appname: ['goapp']
+        deploy-group: ['goapp']
+        s3-bucket: ['code-deploy-bucket-saba']
+        s3-filename: ['goapp-${{ github.sha }}']
+
+      environment: test
+      permissions:
+        id-token: write
+        contents: read
+      steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          # role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          # role-session-name: GitHub-Action-Role
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  
+          aws-region: ${{ env.AWS_REGION }}
+
+       # Install AWS CLI 2
+      - name: Install AWS CLI 2
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+       # Deploy push to AWS S3
+      - name: AWS Deploy push
+        run: |
+          aws deploy push \
+          --application-name ${{ matrix.appname }} \
+          --description "This is a revision for the ${{ matrix.appname }}-${{ github.sha }}" \
+          --ignore-hidden-files \
+          --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
+          --source .
+      
+  #   - run: |
+  #       commit_hash=`git rev-parse HEAD`
+  #       aws deploy create-deployment --application-name goapp --deployment-group-name goapp --github-location repository=$GITHUB_REPOSITORY,commitId=$commit_hash --ignore-application-stop-failures
 
 
