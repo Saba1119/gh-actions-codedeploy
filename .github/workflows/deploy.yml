@@ -40,7 +40,7 @@ jobs:
         working-directory: ${{ env.applicationfolder }}
         run: aws s3 cp goapp  s3://${{ env.S3BUCKET }}/goapp.zip 
 
-    deploy:
+  deploy:
       needs: build
       runs-on: ubuntu-latest
       strategy:
@@ -80,7 +80,7 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
           --source .
-      
+        
   #   - run: |
   #       commit_hash=`git rev-parse HEAD`
   #       aws deploy create-deployment --application-name goapp --deployment-group-name goapp --github-location repository=$GITHUB_REPOSITORY,commitId=$commit_hash --ignore-application-stop-failures
