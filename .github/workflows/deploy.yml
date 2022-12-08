@@ -1,45 +1,42 @@
 name: Build and Deploy
-
 on:
   push:
     branches: [ master ]
-
 env:
-  applicationfolder: goapp
+  APPLICATION_FOLDER: goapp
   AWS_REGION: us-east-1
-  S3BUCKET: code-deploy-bucket-saba
-  appname: goapp
-  deploy-group: goapp 
-  s3-filename: goapp
+  S3_BUCKET: code-deploy-bucket-saba
+  APPNAME: goapp
+  CD_GROUP: goapp
+  S3_FILENAME: goapp-${{ github.sha }}
 
 jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v2
         name: Checkout Repository
-
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ secrets.AWS_REGION }}  
-  
+          aws-region: ${{ secrets.AWS_REGION }}
+      
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: '1.18'
-          
+      
       - name: Run build
         id: package
-        working-directory: ${{ env.applicationfolder }}   
+        working-directory: ${{ env.APPLICATION_FOLDER }}
         run: go build
-        
-
+      
       -  name: Install AWS CLI v2
          run:  |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
@@ -47,12 +44,12 @@ jobs:
           rm /tmp/awscliv2.zip
           sudo /tmp/aws/install --update
           rm -rf /tmp/aws/
-
+      
       - name: AWS Deploy push
         run: |
           aws deploy push \
-          --application-name ${{ env.appname }} \
-          --description "This is a revision for the ${{ env.appname }}-${{ github.sha }}" \
+          --application-name ${{ env.APPNAME }} \
+          --description "This is a revision for the ${{ env.APPNAME }}-${{ github.sha }}" \
           --ignore-hidden-files \
-          --s3-location s3://${{ env.s3-bucket }}/${{ env.s3-filename }}.zip \
-          --source . 
+          --s3-location s3://${{ env.S3_BUCKET }}/${{ env.S3_FILENAME }}.zip \
+          --source .
