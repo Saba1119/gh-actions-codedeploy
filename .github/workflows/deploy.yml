@@ -53,3 +53,12 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://${{ env.S3_BUCKET }}/${{ env.S3_FILENAME }}.zip \
           --source .
+
+      - name: AWS Create Deployment
+        run: |
+          aws deploy create-deployment \
+           --application-name ${{ env.APPNAME }} \
+           --deployment-config-name CodeDeployDefault.OneAtATime \
+           --deployment-group-name ${{ env.CD_GROUP }} \
+           --file-exists-behavior OVERWRITE \
+           --s3-location bucket=${{ env.S3_BUCKET }},key=${{ env.S3_FILENAME }}.zip,bundleType=zip \     
