@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "starting go application"
-cd /home/ubuntu/goapp/ && ./goapp &  
+cd /home/ubuntu/goapp/ && ./goapp -d
