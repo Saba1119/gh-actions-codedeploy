@@ -8,16 +8,14 @@ env:
   applicationfolder: goapp
   AWS_REGION: us-east-1
   S3BUCKET: code-deploy-bucket-saba
+  appname: goapp
+  deploy-group: goapp 
+  s3-filename: goapp
 
 jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-latest
-    myapp:
-        appname: ['goapp']
-        deploy-group: ['goapp']
-        s3-bucket: ['code-deploy-bucket-saba']
-        s3-filename: ['goapp-${{ github.sha }}']
 
     steps:
       - uses: actions/checkout@v2
@@ -53,8 +51,8 @@ jobs:
       - name: AWS Deploy push
         run: |
           aws deploy push \
-          --application-name ${{ myapp.appname }} \
-          --description "This is a revision for the ${{ myapp.appname }}-${{ github.sha }}" \
+          --application-name ${{ env.appname }} \
+          --description "This is a revision for the ${{ env.appname }}-${{ github.sha }}" \
           --ignore-hidden-files \
-          --s3-location s3://${{ myapp.s3-bucket }}/${{ myapp.s3-filename }}.zip \
+          --s3-location s3://${{ env.s3-bucket }}/${{ env.s3-filename }}.zip \
           --source . 
