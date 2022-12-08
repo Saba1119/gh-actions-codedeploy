@@ -8,13 +8,16 @@ env:
   applicationfolder: goapp
   AWS_REGION: us-east-1
   S3BUCKET: code-deploy-bucket-saba
-  appname: goapp
-  deploy-group: goapp 
-  s3-filename: goapp
+
 jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-latest
+    myapp:
+        appname: ['goapp']
+        deploy-group: ['goapp']
+        s3-bucket: ['code-deploy-bucket-saba']
+        s3-filename: ['goapp-${{ github.sha }}']
 
     steps:
       - uses: actions/checkout@v2
@@ -36,27 +39,11 @@ jobs:
       - name: Run build
         id: package
         working-directory: ${{ env.applicationfolder }}   
-        run: go build
 
-      - name: Upload Artifact to s3
-        working-directory: ${{ env.applicationfolder }}
-        run: aws s3 cp goapp  s3://${{ env.S3BUCKET }}/goapp.zip 
 
-  deploy:
-      needs: build
-      runs-on: ubuntu-latest
-       
-
-      environment: test
-      permissions:
-        id-token: write
-        contents: read
-      steps:
-      - uses: actions/checkout@v2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          # role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
-          # role-session-name: GitHub-Action-Role
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  
@@ -69,22 +56,12 @@ jobs:
           rm /tmp/awscliv2.zip
           sudo /tmp/aws/install --update
           rm -rf /tmp/aws/
-          
+
       - name: AWS Deploy push
         run: |
           aws deploy push \
-          --application-name ${{ env.appname }} \
-          --description "This is a revision for the ${{ env.appname }}-${{ github.sha }}" \
+          --application-name ${{ myapp.appname }} \
+          --description "This is a revision for the ${{ myapp.appname }}-${{ github.sha }}" \
           --ignore-hidden-files \
-          --s3-location s3://${{ env.S3BUCKET }}/${{ env.s3-filename }}.zip \
-          --source .
-        
-      - name: Create CodeDeploy Deployment
-        id: deploy
-        run: |
-          # Assuming the Deployment Group is already setup
-          aws deploy create-deployment \
-            --application-name goapp \
-            --deployment-group-name goapp \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+          --s3-location s3://${{ myapp.s3-bucket }}/${{ myapp.s3-filename }}.zip \
+          --source . 
