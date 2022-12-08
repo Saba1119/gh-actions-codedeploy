@@ -7,7 +7,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, INVISIBL CLOUD : %s\n", r.URL.Path)
+		fmt.Fprintf(w, "Hello, peter : %s\n", r.URL.Path)
 	})
 
 	http.ListenAndServe(":81", nil)
