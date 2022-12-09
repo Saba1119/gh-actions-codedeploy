@@ -4,8 +4,10 @@
 # kill goapp
 # exit 0
 
-pid=`pgrep goapp`
-if [ -n "$pid" ]
-then
-	kill $pid
-fi
+# pid=`pgrep goapp`
+# if [ -n "$pid" ]
+# then
+# 	kill $pid
+# fi
+
+os. Exit()
