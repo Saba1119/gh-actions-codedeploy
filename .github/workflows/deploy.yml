@@ -7,8 +7,8 @@ env:
   AWS_REGION: us-east-1
   S3_BUCKET: code-deploy-bucket-saba
   APPNAME: goapp
-  CD_GROUP: goapp
-  S3_FILENAME: goapp-${{ github.sha }}
+  CD_GROUP: goapp-new
+  S3_FILENAME: goapp
 
 jobs:
   build:
