@@ -35,7 +35,7 @@ jobs:
       - name: Run build
         id: package
         working-directory: ${{ env.APPLICATION_FOLDER }}
-        run: su ubuntu - && go build
+        run: go build 
       
       -  name: Install AWS CLI v2
          run:  |
