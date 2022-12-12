@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "stopping go application"
+# echo "stopping go application"
