@@ -5,7 +5,7 @@ phases:
       golang: 1.13
   build:
     commands:
-      - go build goapp.go
+      - go build
 artifacts:
   files:
     - buildspec.yaml
