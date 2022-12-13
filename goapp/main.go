@@ -7,7 +7,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "aws new %s\n", r.URL.Path)
+		fmt.Fprintf(w, "aws console %s\n", r.URL.Path)
 	})
 
 	http.ListenAndServe(":81", nil)
