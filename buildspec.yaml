@@ -8,8 +8,4 @@ phases:
       - cd goapp && go build main.go
 artifacts:
   files:
-      - goapp/main
-      - scripts/*
-      - appspec.yml 
-      - buildspec.yaml
-      
+      - '**/*'
