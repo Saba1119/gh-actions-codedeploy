@@ -6,12 +6,9 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-<<<<<<< HEAD
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) 
+	{
 		fmt.Fprintf(w, "hello %s\n", r.URL.Path)
-=======
-		fmt.Fprintf(w, "amazon  %s\n", r.URL.Path)
->>>>>>> 6e6ebf6a822b03d14a292d7350f8c4abc5487387
 	})
 
 	http.ListenAndServe(":81", nil)
