@@ -63,11 +63,7 @@ jobs:
       #      --file-exists-behavior OVERWRITE \
       #      --s3-location bucket=${{ env.S3_BUCKET }},key=${{ env.S3_FILENAME }}.zip,bundleType=zip 
 
-      # - name: Trigger AWS CodePipeline
-      #   uses: aws-codepipeline-action@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
-      #     pipeline-name: "pipeline-with-codecommit"      
+      - name: Release change in AWS CodePipeline
+        run: |
+          aws codepipeline start-pipeline-execution --name pipeline-with-codecommit
+               
