@@ -9,5 +9,5 @@ phases:
 artifacts:
   files:
       - goapp/main
-      - scripts
+      - scripts/*
       - appspec.yml 
